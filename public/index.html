@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Заполнение форм · Личное хранилище</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0d12;
+    --bg-2:#11141c;
+    --card:#151926;
+    --card-2:#1b2030;
+    --border:#262d40;
+    --border-hi:#3a4360;
+    --text:#eef1f7;
+    --muted:#8b93a7;
+    --accent:#7c5cff;
+    --accent-2:#4e3bff;
+    --danger:#ff5c7a;
+    --radius:18px;
+    --shadow:0 10px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%, #1a1530 0%, transparent 60%),
+               radial-gradient(900px 500px at -10% 110%, #0e1a2a 0%, transparent 55%),
+               var(--bg);
+    color:var(--text);
+    font-family:'Manrope',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:0 20px 80px;
+  }
+  .wrap{max-width:1280px;margin:0 auto}
+
+  header{
+    padding:48px 0 36px;
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;
+  }
+  header .title{
+    font-family:'Unbounded',sans-serif;
+    font-weight:800;
+    font-size:clamp(28px,5vw,46px);
+    line-height:1.05;
+    letter-spacing:-.02em;
+    margin:0;
+    background:linear-gradient(90deg,#fff,#b9a7ff 60%,#7c5cff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header .sub{
+    color:var(--muted);font-size:15px;margin-top:10px;max-width:520px;line-height:1.5
+  }
+  .btn{
+    font-family:'Manrope',sans-serif;font-weight:600;font-size:15px;
+    border:none;cursor:pointer;border-radius:14px;padding:14px 22px;
+    transition:.2s transform,.2s background,.2s box-shadow;
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff;box-shadow:0 8px 24px rgba(124,92,255,.35)
+  }
+  .btn-primary:hover{box-shadow:0 12px 34px rgba(124,92,255,.5)}
+  .btn-ghost{
+    background:var(--card);color:var(--text);border:1px solid var(--border)
+  }
+  .btn-ghost:hover{border-color:var(--border-hi);background:var(--card-2)}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+    margin-top:8px;
+  }
+  @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}}
+
+  .field-card{
+    background:linear-gradient(180deg,var(--card),var(--card-2));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 22px 18px;
+    box-shadow:var(--shadow);
+    position:relative;
+    transition:border-color .2s;
+  }
+  .field-card:hover{border-color:var(--border-hi)}
+
+  .field-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;margin-bottom:14px;
+  }
+  .field-title{
+    font-family:'Unbounded',sans-serif;font-weight:600;
+    font-size:15px;letter-spacing:.01em;color:#dfe4f2;
+    flex:1;word-break:break-word;
+  }
+  .field-title[contenteditable="true"]{
+    outline:none;background:rgba(124,92,255,.12);
+    border-radius:8px;padding:2px 6px;margin:-2px -6px;
+  }
+  .icon-btn{
+    background:transparent;border:1px solid transparent;cursor:pointer;
+    width:34px;height:34px;border-radius:10px;
+    display:grid;place-items:center;color:var(--muted);
+    transition:.15s;
+  }
+  .icon-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+  .icon-btn.del:hover{color:var(--danger);background:rgba(255,92,122,.12)}
+  .icon-btn svg{width:17px;height:17px}
+
+  .field-textarea{
+    width:100%;resize:none;height:220px;min-height:220px;
+    background:var(--bg-2);color:var(--text);
+    border:1px solid var(--border);border-radius:12px;
+    padding:14px 16px;font-family:'Manrope',sans-serif;
+    font-size:15px;line-height:1.55;letter-spacing:.01em;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .field-textarea:focus{
+    outline:none;border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(124,92,255,.18)
+  }
+
+  .empty{
+    grid-column:1/-1;text-align:center;color:var(--muted);
+    padding:80px 20px;border:1px dashed var(--border);border-radius:var(--radius);
+    font-size:16px;
+  }
+
+  .toolbar{
+    display:flex;gap:12px;flex-wrap:wrap;align-items:center
+  }
+  .sync-status{
+    font-size:13px;font-weight:600;color:var(--muted);
+    padding:8px 14px;border-radius:10px;background:var(--card);
+    border:1px solid var(--border);letter-spacing:.01em;
+    white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="title">Личное хранилище</h1>
+      <p class="sub">Готовые тексты для быстрого заполнения форм при подаче заявок. Всё синхронизируется через Cloudflare — данные одинаковы на всех устройствах.</p>
+    </div>
+    <div class="toolbar">
+      <span id="syncStatus" class="sync-status">—</span>
+      <button class="btn btn-primary" id="addBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Добавить поле
+      </button>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function(){
+  const CACHE_KEY='formvault_cache_v1';
+  const TOKEN_KEY='formvault_token_v1';
+  const API='/api/data';
+  const POLL_MS=15000;     // опрос сервера каждые 15 сек
+  const PUSH_DELAY=800;    // задержка отправки изменений
+
+  const grid=document.getElementById('grid');
+  const addBtn=document.getElementById('addBtn');
+  const statusEl=document.getElementById('syncStatus');
+
+  const icons={
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>',
+    del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>'
+  };
+
+  let fields=[];
+  let serverUpdatedAt=0;
+  let pushTimer=null;
+  let isEditing=false;     // пользователь активно правит поле
+
+  // --- токен ---
+  function getToken(){
+    let t=localStorage.getItem(TOKEN_KEY);
+    if(!t){
+      t=prompt('Введите токен доступа (задаётся в Cloudflare как DATA_TOKEN):');
+      if(t){localStorage.setItem(TOKEN_KEY,t.trim())}else{t=''}
+    }
+    return t;
+  }
+  function resetToken(){
+    localStorage.removeItem(TOKEN_KEY);
+    location.reload();
+  }
+
+  // --- API ---
+  async function apiGet(){
+    const r=await fetch(API,{headers:{'x-data-token':getToken()}});
+    if(r.status===401){resetToken();throw new Error('unauthorized')}
+    if(!r.ok){
+      let msg='HTTP '+r.status;
+      try{const j=await r.json();if(j.error)msg+=': '+j.error}catch(e){}
+      throw new Error(msg);
+    }
+    return r.json();
+  }
+  async function apiPut(data){
+    const r=await fetch(API,{
+      method:'PUT',
+      headers:{'content-type':'application/json','x-data-token':getToken()},
+      body:JSON.stringify({fields:data})
+    });
+    if(r.status===401){resetToken();throw new Error('unauthorized')}
+    if(!r.ok){
+      let msg='HTTP '+r.status;
+      try{const j=await r.json();if(j.error)msg+=': '+j.error}catch(e){}
+      throw new Error(msg);
+    }
+    return r.json();
+  }
+
+  // --- локальный кэш (чтобы мгновенно показывать при загрузке) ---
+  function loadCache(){
+    try{return JSON.parse(localStorage.getItem(CACHE_KEY))||null}catch(e){return null}
+  }
+  function saveCache(){
+    localStorage.setItem(CACHE_KEY,JSON.stringify({fields,updatedAt:serverUpdatedAt}));
+  }
+
+  function setStatus(state,detail){
+    const map={
+      sync:{t:'Синхронизировано',c:'#3ad29f'},
+      push:{t:'Сохранение…',c:'#ffb454'},
+      pull:{t:'Обновление…',c:'#7c9cff'},
+      err:{t:'Ошибка: '+(detail||'нет связи'),c:'#ff5c7a'},
+      off:{t:'Локально',c:'#8b93a7'}
+    };
+    const s=map[state]||map.off;
+    statusEl.textContent=s.t;
+    statusEl.style.color=s.c;
+  }
+
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+  // --- рендер ---
+  function render(){
+    grid.innerHTML='';
+    if(!fields.length){
+      const e=document.createElement('div');
+      e.className='empty';
+      e.textContent='Пока нет полей. Нажмите «Добавить поле», чтобы создать первое.';
+      grid.appendChild(e);
+      return;
+    }
+    fields.forEach(f=>grid.appendChild(card(f)));
+  }
+
+  function card(f){
+    const el=document.createElement('div');
+    el.className='field-card';
+    el.innerHTML=`
+      <div class="field-head">
+        <div class="field-title" data-id="${f.id}">${escapeHtml(f.title)}</div>
+        <div style="display:flex;gap:4px">
+          <button class="icon-btn edit" title="Переименовать">${icons.edit}</button>
+          <button class="icon-btn del" title="Удалить">${icons.del}</button>
+        </div>
+      </div>
+      <textarea class="field-textarea" placeholder="Введите текст…">${escapeHtml(f.text)}</textarea>
+    `;
+    const titleEl=el.querySelector('.field-title');
+    const ta=el.querySelector('.field-textarea');
+    const editBtn=el.querySelector('.edit');
+    const delBtn=el.querySelector('.del');
+
+    const markEditing=()=>{isEditing=true};
+    const unmarkEditing=()=>{isEditing=false};
+
+    ta.addEventListener('focus',markEditing);
+    ta.addEventListener('blur',unmarkEditing);
+
+    editBtn.addEventListener('click',()=>{
+      const editing=titleEl.getAttribute('contenteditable')==='true';
+      if(!editing){
+        titleEl.setAttribute('contenteditable','true');
+        titleEl.focus();
+        document.execCommand('selectAll',false,null);
+        editBtn.innerHTML=icons.save;
+        editBtn.title='Сохранить название';
+        isEditing=true;
+      }else{
+        titleEl.removeAttribute('contenteditable');
+        f.title=titleEl.textContent.trim()||'Без названия';
+        titleEl.textContent=f.title;
+        editBtn.innerHTML=icons.edit;
+        editBtn.title='Переименовать';
+        isEditing=false;
+        schedulePush();
+      }
+    });
+    titleEl.addEventListener('blur',()=>{
+      if(titleEl.getAttribute('contenteditable')==='true'){
+        titleEl.removeAttribute('contenteditable');
+        f.title=titleEl.textContent.trim()||'Без названия';
+        titleEl.textContent=f.title;
+        editBtn.innerHTML=icons.edit;
+        isEditing=false;
+        schedulePush();
+      }
+    });
+    titleEl.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();titleEl.blur()}
+    });
+    ta.addEventListener('input',()=>{
+      f.text=ta.value;
+      schedulePush();
+    });
+    delBtn.addEventListener('click',()=>{
+      fields=fields.filter(x=>x.id!==f.id);
+      saveCache();
+      render();
+      schedulePush();
+    });
+    return el;
+  }
+
+  function escapeHtml(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+  // --- отправка изменений на сервер ---
+  function schedulePush(){
+    saveCache();
+    setStatus('push');
+    clearTimeout(pushTimer);
+    pushTimer=setTimeout(push,PUSH_DELAY);
+  }
+  async function push(){
+    try{
+      const res=await apiPut(fields);
+      serverUpdatedAt=res.updatedAt||serverUpdatedAt;
+      saveCache();
+      setStatus('sync');
+    }catch(e){
+      console.error('[push]',e);
+      setStatus('err',e.message);
+    }
+  }
+
+  // --- опрос сервера ---
+  async function pull(silent){
+    if(!silent)setStatus('pull');
+    try{
+      const res=await apiGet();
+      if(res.updatedAt>serverUpdatedAt){
+        serverUpdatedAt=res.updatedAt;
+        // не перерисовываем, пока пользователь правит поле
+        if(!isEditing){
+          fields=res.fields||[];
+          saveCache();
+          render();
+        }
+      }
+      setStatus('sync');
+    }catch(e){
+      console.error('[pull]',e);
+      setStatus('err',e.message);
+    }
+  }
+
+  addBtn.addEventListener('click',()=>{
+    fields.push({id:uid(),title:'Новое поле',text:''});
+    saveCache();
+    render();
+    schedulePush();
+    const last=grid.lastElementChild;
+    if(last&&last.querySelector){last.querySelector('.field-textarea')?.focus()}
+  });
+
+  // --- инициализация ---
+  (async function init(){
+    // мгновенно показываем кэш
+    const cache=loadCache();
+    if(cache){
+      fields=cache.fields||[];
+      serverUpdatedAt=cache.updatedAt||0;
+    }
+    render();
+    setStatus('pull');
+    await pull(true);
+    // периодический опрос
+    setInterval(()=>pull(true),POLL_MS);
+    // синхронизация при возврате фокуса на вкладку
+    document.addEventListener('visibilitychange',()=>{
+      if(!document.hidden)pull(true);
+    });
+  })();
+})();
+</script>
+</body>
+</html>

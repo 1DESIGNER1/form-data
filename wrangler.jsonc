@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "forms-data",
+  "compatibility_date": "2025-03-01",
+  "main": "src/index.js",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "FORMVAULT_KV",
+      "id": "ЗАМЕНИТЕ_НА_ID_ВАШЕГО_KV_НЕЙМСПЕЙСА"
+    }
+  ]
+}
